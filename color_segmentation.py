@@ -2,8 +2,8 @@ import cv2
 #import imutils
 import numpy as np
 import pdb
-low_range  = np.array([ 0, 20, 160])
-high_range = np.array([15, 255, 255])
+low_range  = np.array([ 00, 100, 150])
+high_range = np.array([20, 200, 200])
 def cd_color_segmentation(img):
 	new_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 	mask=cv2.inRange(new_img, low_range, high_range)

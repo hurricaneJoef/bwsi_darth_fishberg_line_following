@@ -16,7 +16,6 @@ IMAGE_TOPIC = "/zed/zed_node/color_seg_output"
 left="/zed/zed_node/left_raw/image_raw_color"
 right="/zed/zed_node/right_raw/image_raw_color"
 AUTONOMOUS_MODE = True
-
 class driveStop(object):
 	kp=1
 	kd=1
@@ -33,7 +32,6 @@ class driveStop(object):
 		self.flag_box = ((0,0),(0,0))
 		self.flag_center = (0,0)
 		self.flag_size = 0
-
                 """driving stuff"""
 		self.cmd = AckermannDriveStamped()
 		self.cmd.drive.speed = 0
@@ -54,11 +52,21 @@ class driveStop(object):
 		#centl=self.findCenter(maskl)
 		cent=self.findCenter(self.mask)
 		print(cent)
-		if cent==-1:
-			self.drive(.3,0)
+		
+                if AUTONOMOUS_MODE:
+			if cent==-1:
+				self.drive(.3,0)
+			else:
+				angle=self.angle(cent,cent)
+				self.drive(1,angle)
 		else:
-			angle=self.angle(cent,cent)
-			self.drive(1,angle)
+			pass
+		try:
+                        self.image_pub.publish(self.bridge.cv2_to_imgmsg(self.mask, "8UC1"))
+                except CvBridgeError as e:
+                        print("Error bridging Zed image", e)
+		
+		
 
 	def size_calc(self):
 		""" calculate the x and y size of the box in pixels"""
@@ -68,11 +76,11 @@ class driveStop(object):
 		self.box_size = pix_width*pix_height
 		
 	def angle(self, x1, x2):
-        	return ((336-x1)+(336-x2))/(2*200.0)
-        def findCenter(self,img):
+        	return self.kp*(-(336-x1)/(600.0))
+	def findCenter(self, img) :
 		height = img.shape[0]
 
-		bottom_50 = img[height-50:height]
+		bottom_50 = img[height-150:height]
 
 		total = 0
 		num = 0
@@ -125,7 +133,6 @@ def main():
 		while not rospy.is_shutdown():
 			if AUTONOMOUS_MODE:
 				ic.pub.publish(ic.cmd)
-			
 	except rospy.ROSInterruptException:
 		exit()
 
