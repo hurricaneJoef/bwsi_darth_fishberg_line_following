@@ -4,6 +4,7 @@
 import rospy
 import cv2
 import time
+import time
 import numpy as np
 from newZed import Zed_converter
 from cv_bridge import CvBridge, CvBridgeError
@@ -17,6 +18,7 @@ left="/zed/zed_node/left_raw/image_raw_color"
 right="/zed/zed_node/right_raw/image_raw_color"
 AUTONOMOUS_MODE = True
 class driveStop(object):
+
 	kp=1
 	kd=1
 	"""class that will help the robot drive and stop at certain conditions
@@ -48,23 +50,27 @@ class driveStop(object):
 
 	def autonomous(self):
 		#maskl=cd_color_segmentation(left)
-		self.mask=cd_color_segmentation(self.camera_data.cv_image)
-		#centl=self.findCenter(maskl)
-		cent=self.mask
+		cent=cd_color_segmentation(self.camera_data.cv_image)
 		print(cent)
-		
-                if AUTONOMOUS_MODE:
-			if cent==-1:
-				self.drive(.3,0)
-			else:
-				angle=self.angle(cent,cent)
-				self.drive(1,angle)
+		if cent==-1:
+			if self.lasttime+5>time.time()
+				self.drive(0,0)
 		else:
-			pass
-		#try:
-                        #self.image_pub.publish(self.bridge.cv2_to_imgmsg(self.mask, "8UC1"))
-                #except CvBridgeError as e:
-                 #       print("Error bridging Zed image", e)
+			self.lasttime=time.time()
+		
+		
+                	if AUTONOMOUS_MODE:
+				if cent==-1:
+					self.drive(.3,0)
+				else:
+					angle=self.angle(cent,cent)
+					self.drive(1,angle)
+			else:
+				pass
+			#try:
+                	        #self.image_pub.publish(self.bridge.cv2_to_imgmsg(self.mask, "8UC1"))
+                	#except CvBridgeError as e:
+                	 #       print("Error bridging Zed image", e)
 		
 		
 
@@ -74,7 +80,8 @@ class driveStop(object):
 		pix_height = self.flag_box[1][1] - self.flag_box[0][1]	
 
 		self.box_size = pix_width*pix_height
-		
+	
+	
 	def angle(self, x1, x2):
         	return ((336-x1)/(600.0))
 	
