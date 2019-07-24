@@ -50,7 +50,7 @@ class driveStop(object):
 		#maskl=cd_color_segmentation(left)
 		self.mask=cd_color_segmentation(self.camera_data.cv_image)
 		#centl=self.findCenter(maskl)
-		cent=self.findCenter(self.mask)
+		cent=self.mask
 		print(cent)
 		
                 if AUTONOMOUS_MODE:
@@ -61,10 +61,10 @@ class driveStop(object):
 				self.drive(1,angle)
 		else:
 			pass
-		try:
-                        self.image_pub.publish(self.bridge.cv2_to_imgmsg(self.mask, "8UC1"))
-                except CvBridgeError as e:
-                        print("Error bridging Zed image", e)
+		#try:
+                        #self.image_pub.publish(self.bridge.cv2_to_imgmsg(self.mask, "8UC1"))
+                #except CvBridgeError as e:
+                 #       print("Error bridging Zed image", e)
 		
 		
 
@@ -76,24 +76,8 @@ class driveStop(object):
 		self.box_size = pix_width*pix_height
 		
 	def angle(self, x1, x2):
-        	return self.kp*(-(336-x1)/(600.0))
-	def findCenter(self, img) :
-		height = img.shape[0]
-
-		bottom_50 = img[height-150:height]
-
-		total = 0
-		num = 0
-		for row in bottom_50:
-			for i in range(len(row)):
-				#print(row[i])
-				if row[i] >= 1 :
-					total += i
-					num += 1
-
-    		if num==0:
-    			return -1
-    		return total/num
+        	return ((336-x1)/(600.0))
+	
 	def driveStop_car_callback(self,data):
 		"""laser scan callback function"""
 		#checks if the image is valid first
